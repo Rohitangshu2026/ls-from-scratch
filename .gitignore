@@ -1,0 +1,6 @@
+# build artifacts
+*.o
+myls
+
+# optional
+.DS_Store
