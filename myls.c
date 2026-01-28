@@ -1,24 +1,34 @@
 /*
-1. Parse arguments -> -a, -t
-2. for directories ls -> ls dir1
-3. sort everything alphabetically or by time
-4. print
-5. free
-*/
+ * Program Overview
+ * ----------------
+ * Implements a simplified version of the Unix `ls` command.
+ *
+ * Execution Flow:
+ *   1. Parse command-line options:
+ *        - `-a` to include hidden files
+ *        - `-t` to sort by modification time
+ *
+ *   2. Process operands:
+ *        - Separate files and directories
+ *        - Default to the current directory (`.`) if no operands are provided
+ *
+ *   3. Sort operands:
+ *        - Lexicographically by name (default)
+ *        - By modification time when `-t` is specified
+ *
+ *   4. Display output:
+ *        - Print files first, followed by directories
+ *        - Format output to match standard `ls` behavior
+ *
+ *   5. Cleanup:
+ *        - Release any acquired resources (directory streams, etc.)
+ */
 
 #include "myls.h"
-void print_file_list_debug(const file_list_t *flist){
-    printf("\n=== Debugging read_directory() output ==\n");
-    printf("\nTotal files read: %d\n",flist->count);
-    for(int i = 0; i < flist->count; ++i){
-        printf("[%d] Name: %s, Sec: %ld, nSec: %ld, isDir: %s\n",i,flist->files[i].name,flist->files[i].sec,flist->files[i].nsec,flist->files[i].is_dir ? "Yes" : "No");
-    }
-    printf("=========================================\n\n");
-}
+
 int main(int argc, char** argv){
-    // 1. Parse options
+    // parse options
     options_t opts = parse_options(argc,argv);
-    // printf("Options: %d, %d\n",opts.show_all, opts.sort_time);
     
     // store directories and paths
     char* dirs[argc];
@@ -28,34 +38,26 @@ int main(int argc, char** argv){
     int dir_count = 0;
     int non_dir_count = 0;
     
-    // 2. Gather paths
+    // gather paths
     gather_paths(argc,argv,non_dirs,&non_dir_count,dirs,&dir_count);
-    // printf("total: %d\n",total);
-    // printf("dirs: %s %s\n",dirs[0],dirs[1]);
-    // printf("non-dirs: %s\n",non_dirs[0]);
 
-    // 3. sort non-directories lexicographically
+    // sort non-directories lexicographically
     if(non_dir_count > 1)
         sort_entries(non_dirs, non_dir_count);
 
-    // 3. sort directories lexicographically
+    // sort directories lexicographically
     if(dir_count > 1)
         sort_entries(dirs, dir_count);
 
-    // printf("total: %d\n",total);
-    // printf("dirs: %s %s\n",dirs[0],dirs[1]);
-    // printf("non-dirs: %s\n",non_dirs[0]);
-
-    // 4. print non directories
+    // print non directories
     for(int i = 0; i < non_dir_count; ++i){
-        // print file name
         printf("%s\n",non_dirs[i]);
     }
 
     if(non_dir_count > 0 && dir_count > 0)
         printf("\n");
 
-    // 5. for each directory, read, sort, print!
+    // for each directory read, sort, print
     for(int i = 0; i < dir_count; ++i){
         if(dir_count > 1){
             printf("%s:\n",dirs[i]);
@@ -63,7 +65,6 @@ int main(int argc, char** argv){
 
         // read the directory
         file_list_t flist = read_directory(dirs[i],opts.show_all);
-        // print_file_list_debug(&flist);
         sort_file_list(&flist, opts.sort_time);
         for (int j = 0; j < flist.count; ++j)
             printf("%s\n", flist.files[j].name);
@@ -71,7 +72,6 @@ int main(int argc, char** argv){
         if (i < dir_count - 1)
             printf("\n");
     }
-
     return 0;
 }
 
