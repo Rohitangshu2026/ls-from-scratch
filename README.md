@@ -1,4 +1,4 @@
-# myls — Unix `ls` Reimplementation in C
+# myls — Unix `ls` command implementation in C
 
 A from-scratch implementation of the Unix `ls` command in C, built to understand filesystem traversal, metadata handling, and POSIX system calls.  
 The project mirrors core `ls` behavior while focusing on clean design, correctness, and extensibility.
@@ -146,3 +146,4 @@ These are intentional trade-offs to prioritize correctness and clarity.
 - Permission and ownership display
 - Dynamic memory allocation for large directories
 - Colorized output
+
